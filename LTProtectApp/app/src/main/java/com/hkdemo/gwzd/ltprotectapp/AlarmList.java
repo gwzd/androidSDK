@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -52,12 +55,13 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
 
     private static final int MENU_PIC_ID = Menu.FIRST + 1;//使用Menu.FIRST常量而不使用其他常量的原因：程序封装的变量 用起来不占内存 程序读的快 不容易出错
     private static final int MENU_VIDEO_ID=Menu.FIRST + 2;
-    private final String WSDL_URI = "http://112.54.80.211:82/LTProtectService/ServletPort?wsdl";
+    private final String WSDL_URI = "http://www.sd-gwzd.com/LTProtectService/ServletPort?wsdl";
     private String TAG = "获取报警视频";
 
     private String RealName;
     private String LoginUserName;
     private ListView listview;
+    private SwitchCompat switchcom;
     private SimpleAdapter simpleAdapter;//列表适配器
     private SimpleAdapter DeviceTreeAdapter;//列表适配器
     private boolean flag;               //滚动条滚动判断
@@ -75,6 +79,7 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
     private ActionBarDrawerToggle mDrawerToggle = null;     //抽屉控件得适配器
     private DrawerLayout mDrawerLayout = null;              //抽屉布局
     private Toolbar toolbar = null;
+    private TextView tvHeader = null;
 
     private long exitTime = 0; //实现两次返回 退出
     //private ProgressDialog progressDialog = null;//进度条
@@ -104,7 +109,12 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
         //DeviceTree.setOnItemClickListener(AppCompatActivity.this);
         //抽屉控件绑定
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("操作员:"+RealName);
+        //toolbar.setTitle("操作员:"+RealName);
+        //setSupportActionBar(toolbar);
+        //toolbar.setOnMenuItemClickListener(onMenuItemClick);
+        switchcom = findViewById(R.id.alarmList_toolBtn);
+        switchcom.setText("操作员:"+RealName);
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.drawer_open,R.string.drawer_close);
         mDrawerToggle.syncState();
@@ -136,11 +146,12 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
                 }
             }
         });
+
         /******************************************************************************************************************************************/
         //初始化报警列表
         listview = findViewById(R.id.alarmListview);
         //添加一个TextView作为表头
-        TextView tvHeader=new TextView(AlarmList.this);
+        tvHeader=new TextView(AlarmList.this);
         tvHeader.setText("报警列表");
         listview.addHeaderView(tvHeader);
         /*
@@ -164,11 +175,11 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
                         // 判断滚动到顶部
                         else if(listview.getFirstVisiblePosition() == 0){
                             //Log.d("调试打印","滚动到了最顶部");
-                            i_date ++;
-                            RefrushAlarm(i_date);
+                            //i_date ++;
+                            //RefrushAlarm(i_date);
                         }
                         else{
-                            MyPlaySount("系统错误，无法刷新数据!");
+                            //MyPlaySount("系统错误，无法刷新数据!");
                         }
                         break;
                     default:
@@ -212,7 +223,22 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
         //为listview添加长按弹出菜单事件
         listMap = new ArrayList();
         simpleAdapter = new SimpleAdapter(AlarmList.this,listMap, R.layout.alarmadapter,
-                new String[]{"addr","Alarm","id"},new int[]{R.id.AlarmLineTower,R.id.AlarmInfo,R.id.AlarmID});
+                new String[]{"alarmPic","addr","Alarm","id","End"},new int[]{R.id.AlarmPic,R.id.AlarmLineTower,R.id.AlarmInfo,R.id.AlarmID,R.id.AlarmState}){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                Map map = (Map)listMap.get(position);
+                String str_AlarmState = (String)map.get("End");
+                TextView textView = (TextView) view.findViewById(R.id.AlarmState);
+                if(str_AlarmState.compareTo("报警") == 0){
+                    textView.setTextColor(Color.RED);
+                }
+                else{
+                    textView.setTextColor(Color.GREEN);
+                }
+                return view;
+            }
+        };
         listview.setAdapter(simpleAdapter);
         //进度条
         mProgressView = findViewById(R.id.AlarmpbNormal);
@@ -221,7 +247,6 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
         //获取设备列表
         GetCameraList();
     }
-
     /**
      * @author zxl
      * @time 2019.3.19
@@ -440,8 +465,9 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
         //通过webservice检查信息
         private String GetAlarmTable(String userName,String kssj,String jssj){
             //String WSDL_URI = "http://112.54.80.211:5042/LTProtectService/ServletPort?wsdl";
+            boolean b_normal = switchcom.isChecked();
             String NAME_SPACE = "http://zxl.ltprotect.com/";
-            String methodName = "GetAlarmTable";
+            String methodName = b_normal ? "GetNormalAlarm":"GetAlarmTable";
             String str_Ret = "";
             //（1）创建HttpTransportSE对象，该对象用于调用WebService操作
             HttpTransportSE httpTransportSE = new HttpTransportSE(WSDL_URI,90*1000);
@@ -451,8 +477,8 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
             SoapObject request = new SoapObject(NAME_SPACE, methodName);
             //(4) //填入需要传入的参数
             request.addProperty("arg0",userName);
-            request.addProperty("arg1",kssj);
-            request.addProperty("arg2",jssj);
+            //request.addProperty("arg1",kssj);
+            //request.addProperty("arg2",jssj);
             //（5）调用SoapSerializationEnvelope的setOutputSoapObject()方法，或者直接对bodyOut属性赋值，
             //将前两步创建的SoapObject对象设为SoapSerializationEnvelope的传出SOAP消息体
             envelope.setOutputSoapObject(request);
@@ -507,12 +533,29 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
                         String str_Name = obj.getString("Name");
                         String str_AlarmType = obj.getString("AlarmType");
                         String str_Time = obj.getString("Time");
+                        int i_end = obj.getInt("End");
+                        String str_State = i_end==0?"恢复":"报警";
                         Map map=new HashMap();
                         map.put("addr",str_Name);
-                        map.put("Alarm","报警类型:"+str_AlarmType+" 最新时间:"+str_Time);
+                        map.put("Alarm","报警类型:"+str_AlarmType+" 报警时间:"+str_Time);
                         map.put("id",i_id);
+                        map.put("End", str_State);
+                        if(str_AlarmType.compareTo("水平扫描") == 0){
+                            map.put("alarmPic",R.drawable.spsm);
+                        }
+                        else if(str_AlarmType.compareTo("垂直扫描") == 0){
+                            map.put("alarmPic",R.drawable.czsm);
+                        }
+                        else if(str_AlarmType.compareTo("激光探测") == 0){
+                            map.put("alarmPic",R.drawable.dzwl);
+                        }
+                        else if(str_AlarmType.compareTo("高压防触碰") == 0){
+                            map.put("alarmPic",R.drawable.gycp);
+                        }
+                        else{
+                            map.put("alarmPic",R.drawable.spsm);
+                        }
                         listMap.add(map);
-
                     }
 
                 }catch(Exception e){
@@ -529,14 +572,15 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
             showProgress(false);
             if (success) {
                 //获取成功
+                tvHeader.setText("报警数量:" + listMap.size());
                 simpleAdapter.notifyDataSetChanged();//listmap内容已经改变，如果在线程中调用该方法，界面是不会刷新的，只能在ui线程中调用
-                for(int i=0 ; i<listMap.size() && i<5; i++){
+                for(int i=0 ; i<listMap.size() && i<2; i++){
                     HashMap theMap = (HashMap) listMap.get(i);
                     String str_addr = theMap.get("addr").toString();
                     if(str_addr.contains("-")) {
                         str_addr = str_addr.split("-")[0] + "杠" + str_addr.split("-")[1];
                     }
-                    String str_AlarmInfo = theMap.get("Alarm").toString().split(" 最新时间")[0].split(":")[1];
+                    String str_AlarmInfo = theMap.get("Alarm").toString().split(" 报警时间")[0].split(":")[1];
                     //语音提示
                     String str_Sound = str_addr + "发生" + str_AlarmInfo + "报警!";
                     MyPlaySount(str_Sound);
@@ -550,8 +594,6 @@ public class AlarmList extends AppCompatActivity implements TextToSpeech.OnInitL
         @Override
         protected void onCancelled() {
             alarmInfotask = null;
-            //showProgress(false);
-            //mProgressView.setVisibility(View.GONE);
             showProgress(false);
         }
     }

@@ -359,7 +359,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
-            WSDL_URI = "http://112.54.80.211:82/LTProtectService/ServletPort?wsdl";
+            WSDL_URI = "http://www.sd-gwzd.com/LTProtectService/ServletPort?wsdl";
         }
         //通过webservice检查信息
         private String CheckLogin(String userName,String Password){

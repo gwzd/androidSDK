@@ -43,7 +43,7 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="userLHJ" />
+                    android:text="zxl" />
 
             </android.support.design.widget.TextInputLayout>
 

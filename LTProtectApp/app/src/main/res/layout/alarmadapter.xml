@@ -1,45 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:gravity="center"
     android:layout_height="match_parent">
 
-    <TwoLineListItem xmlns:android="http://schemas.android.com/apk/res/android"
+    <ImageView
+        android:id="@+id/AlarmPic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/dzwl" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/AlarmLineTower"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="TextView" />
+            <TextView
+                android:id="@+id/AlarmInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/AlarmState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="TextView" />
+    </LinearLayout>
+
+    <TextView android:id="@+id/AlarmID"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:paddingTop="2dip"
-        android:paddingBottom="2dip"
-        android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:mode="twoLine"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft">
-
-        <TextView android:id="@+id/AlarmLineTower"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dip"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            android:textAlignment="viewStart"
-            android:gravity="start" />
-
-        <TextView android:id="@+id/AlarmInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/AlarmLineTower"
-            android:layout_alignStart="@+id/AlarmLineTower"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textAlignment="viewStart"
-            android:layout_alignLeft="@+id/AlarmLineTower"
-            android:gravity="start" />
-
-        <TextView android:id="@+id/AlarmID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/AlarmInfo"
-            android:layout_alignStart="@+id/AlarmInfo"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textAlignment="viewStart"
-            android:layout_alignLeft="@+id/AlarmInfo"
-            android:visibility="gone"
-            android:gravity="start" />
-
-    </TwoLineListItem>
-</android.support.constraint.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:gravity="start" />
+</LinearLayout>

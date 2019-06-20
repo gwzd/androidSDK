@@ -52,7 +52,7 @@ import java.util.Date;
 
 public class AlarmVideoShow extends Activity implements SurfaceHolder.Callback {
 
-    private final String WSDL_URI = "http://112.54.80.211:82/LTProtectService/ServletPort?wsdl";
+    private final String WSDL_URI = "http://www.sd-gwzd.com/LTProtectService/ServletPort?wsdl";
     private ShowAlarmPicTask showAlarmPicTask = null;      //获取报警图片
     private Bitmap AlarmMap = null;
     private Button m_oBtnShowPic = null;                  //显示图片按钮
@@ -256,11 +256,11 @@ public class AlarmVideoShow extends Activity implements SurfaceHolder.Callback {
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "获取摄像机信息失败!",Toast.LENGTH_SHORT).show();
-                    finish();
+                    //finish();
                 }
             } else {
                 //获取报警信息失败,退出页面
-                finish();
+                //finish();
             }
         }
 
@@ -906,6 +906,7 @@ public class AlarmVideoShow extends Activity implements SurfaceHolder.Callback {
                 if (m_iLogID < 0) {
                     Log.e(TAG, "请先登陆设备!");
                     Toast.makeText(getApplicationContext(), "摄像机登陆失败，请返回重试!",Toast.LENGTH_SHORT).show();
+                    DoLogin();
                     return;
                 }
                 if (m_bNeedDecode) {

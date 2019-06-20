@@ -15,6 +15,11 @@
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/AppTheme"
         >
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/alarmList_toolBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="操作员"/>
     </android.support.v7.widget.Toolbar>
 
     <android.support.v4.widget.DrawerLayout
